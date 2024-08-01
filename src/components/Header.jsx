@@ -12,7 +12,7 @@ function Header({ turnO, onRestart }) {
         <h2>{turnO ? 'O' : 'X'} Turn</h2>
       </div>
 
-      <button onClick={onRestart} className="reset-button cursor-pointer ">
+      <button onClick={onRestart} className="reset-button mb-4 cursor-pointer ">
         <i className="fa-solid fa-rotate"></i>
       </button>
     </div>

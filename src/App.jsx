@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import Header from './components/Header';
 import Board from './components/Board';
 import Footer from './components/Footer';
+import Overlay from './components/Overlay';
+
 
 
 function App() {
@@ -9,46 +11,55 @@ function App() {
   const [scores, setScores] = useState({ x: 0, o: 0, ties: 0 });
   const [board, setBoard] = useState(Array(9).fill(null));
   const [gameOver, setGameOver] = useState(false);
+  const [winner, setWinner] = useState(null);
 
 
 
   const handleCellClick = (index) => {
-    if (board[index] || gameOver){ 
+    if (board[index] || gameOver) {
       return;
-    } 
-    // console.log(board);
-    const newBoard = [...board];
-    console.log(newBoard);
+    }
+
+    const newBoard = [...board];                       
     newBoard[index] = turnO ? 'O' : 'X';
     setBoard(newBoard);
-    console.log(newBoard);
 
 
     const winner = checkWinner(newBoard);
+
     if (winner) {
       setScores((prevScores) => ({
-        ...prevScores,
-        [winner.toLowerCase()]: prevScores[winner.toLowerCase()] + 1,
+        ...prevScores, [winner.toLowerCase()]: prevScores[winner.toLowerCase()] + 1,
       }));
-      
+      setWinner(winner);
       setGameOver(true);
-    } else if (newBoard.every((cell) => cell !== null)) {
+    } 
+
+    else if (newBoard.every((cell) => cell !== null)) {
       setScores((prevScores) => ({ ...prevScores, ties: prevScores.ties + 1 }));
-      
+      setWinner(null);
       setGameOver(true);
-    } else {
+    } 
+    
+    else {
       setTurnO(!turnO);
     }
   };
 
+
   const resetGame = () => {
     setBoard(Array(9).fill(null));
     setGameOver(false);
-    
+    setWinner(null);
     setTurnO(Math.random() < 0.5);
   };
 
-  
+
+  const resetScoresAndGame = () => {
+    setScores({ x: 0, o: 0, ties: 0 });
+    resetGame();
+  };
+
 
   const checkWinner = (board) => {
     const winningConditions = [
@@ -62,20 +73,28 @@ function App() {
       [2, 4, 6],
     ];
 
+    
     for (let condition of winningConditions) {
       const [a, b, c] = condition;
       if (board[a] && board[a] === board[b] && board[a] === board[c]) {
         return board[a];
       }
-      // console.log(board[a]);
     }
 
     return null;
   };
 
-  
 
-  
+  const handleNextRound = () => {
+    resetGame();
+  };
+
+
+  const handleQuit = () => {
+    resetScoresAndGame();
+  };
+
+
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-800">
@@ -83,7 +102,14 @@ function App() {
         <Header turnO={turnO} onRestart={resetGame} />
         <Board board={board} onCellClick={handleCellClick} />
         <Footer scores={scores} />
-       
+        {gameOver && (
+          <Overlay
+            winner={winner}
+            onQuit={handleQuit}
+            onNextRound={handleNextRound}
+            isTie={winner === null}
+          />
+        )}
       </div>
     </div>
   );
