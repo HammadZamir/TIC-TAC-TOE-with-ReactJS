@@ -1,6 +1,6 @@
 import React from 'react';
 
-function Header({ turnO, onRestart }) {
+const Header = ({ turnO, onRestart }) => {
   return (
     <div className="text-white flex flex-row justify-between mb-5 p-4 rounded-lg">
       <div className="mb-4 text-xl font-bold text-gray-300">
